@@ -17,7 +17,7 @@ try:
     time.sleep(2)  # Allow time for the page to load
 
     movies = []
-    max_movies = 30  # Max number of movies to scrape
+    max_movies = 500  # Max number of movies to scrape
     load_more_selector = 'button[data-qa="dlp-load-more-button"]'  # Selector for the "Load More" button
     movie_selector = 'div[data-qa="discovery-media-list-item"]'  # Selector for movie containers
     title_selector = 'span[data-qa="discovery-media-list-item-title"]'  # Selector for movie titles
