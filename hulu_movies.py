@@ -7,7 +7,7 @@ import pandas as pd
 import time
 import traceback
 
-# Set up WebDriver (example here Firefox)
+# Set up WebDriver
 driver = webdriver.Firefox()
 
 url = "https://www.rottentomatoes.com/browse/movies_at_home/affiliates:hulu"
@@ -95,21 +95,26 @@ try:
             print("No more 'Load More' button or an error occurred:", e)
             break  # Exit the loop if no more button is available
 
-    # Save movies to a CSV file
+
     if movies:
         # Create a DataFrame
         df = pd.DataFrame(movies)
 
-        # Clean data for consistency
+        # Clean data
         df["Tomatometer"] = df["Tomatometer"].str.replace("%", "").replace("N/A", None).astype("float", errors="ignore")
         df["Popcornmeter"] = df["Popcornmeter"].str.replace("%", "").replace("N/A", None).astype("float",
                                                                                                  errors="ignore")
+        df["Streaming Start"] = df["Streaming Start"].str.replace("Streaming ", "")
         df["Streaming Start"] = pd.to_datetime(df["Streaming Start"], format="%b %d, %Y", errors="coerce")
+        df['Streaming Start'] = df['Streaming Start'].dt.strftime('%d.%m.%Y') #change format
+        #handle missing cols by mean of the columns
+        cols = ['Tomatometer', 'Popcornmeter']
+        df[cols] = df[cols].apply(lambda x: x.fillna(x.mean()), axis=0)
 
-        # Drop duplicates (if any)
+        # Drop duplicates
         df.drop_duplicates(inplace=True)
 
-        # Save the cleaned DataFrame to a CSV file
+        # Save to a CSV file
         df.to_csv("hulu_movies.csv")
         print(f"Movies saved to 'hulu_movies.csv' with {len(df)} unique movies.")
     else:
